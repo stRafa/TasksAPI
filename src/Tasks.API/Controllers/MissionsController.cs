@@ -1,9 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Tasks.Application;
 using Tasks.Application.DTOs.User;
 using Tasks.Application.Interfaces;
-using Tasks.Domain.User;
 
 namespace Tasks.API.Controllers;
 

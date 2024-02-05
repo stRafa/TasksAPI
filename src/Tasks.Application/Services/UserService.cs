@@ -46,6 +46,11 @@ public class UserService : IUserService
 
     public async Task<ResultViewModel<User>> AddMission(CreateMissionDTO missionDto)
     {
+        var validationResult = await new CreateMissionDTOValidator().ValidateAsync(missionDto);
+        
+        if (!validationResult.IsValid)
+            return new ResultViewModel<User>(validationResult);
+        
         var user = await _userRepository.GetById(missionDto.UserId);
 
         if (user is null)
@@ -61,6 +66,11 @@ public class UserService : IUserService
 
     public async Task<ResultViewModel<User>> UpdateMissionsPosition(EditMissionsPositionDTO missionDto)
     {
+        var validationResult = await new EditMissionsPositionDTOValidator().ValidateAsync(missionDto);
+        
+        if (!validationResult.IsValid)
+            return new ResultViewModel<User>(validationResult);
+        
         var mission = await _missionRepository.GetById(missionDto.MissionId);
         
         if (mission is null)
@@ -68,7 +78,7 @@ public class UserService : IUserService
 
         var user = await _userRepository.GetById(mission.UserId);
 
-        user.UpdateMissionPosition(missionDto.MissionId, missionDto.newPosition);
+        user.UpdateMissionPosition(missionDto.MissionId, missionDto.NewPosition);
         
         _missionRepository.UpdateMany(user.Missions);
 
@@ -77,6 +87,11 @@ public class UserService : IUserService
 
     public async Task<ResultViewModel<Mission>> UpdateMission(EditMissionDTO missionDto)
     {
+        var validationResult = await new EditMissionDTOValidator().ValidateAsync(missionDto);
+        
+        if (!validationResult.IsValid)
+            return new ResultViewModel<Mission>(validationResult);
+        
         var mission = await _missionRepository.GetById(missionDto.Id);
 
         mission.Title = missionDto.Title;
