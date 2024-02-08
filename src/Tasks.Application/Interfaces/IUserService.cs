@@ -9,7 +9,6 @@ public interface IUserService
     Task<ResultViewModel<List<User>>> GetAll();
     Task<ResultViewModel<User>> GetById(Guid id);
 
-    ResultViewModel<User> Create(CreateUserDTO userDto, Guid userId);
     Task<ResultViewModel<User>> AddMission(CreateMissionDTO missionDto);
     Task<ResultViewModel<User>> UpdateMissionsPosition(EditMissionsPositionDTO missionDto);
     Task<ResultViewModel<Mission>> UpdateMission(EditMissionDTO missionDto);

@@ -31,18 +31,6 @@ public class UserService : IUserService
 
         return new ResultViewModel<User>(user);
     }
-    
-
-    public ResultViewModel<User> Create(CreateUserDTO userDto, Guid userId)
-    {
-        var user = new User(userDto.Name, userDto.Email);
-        
-        user.Id = userId;
-
-        _userRepository.Create(user);
-
-        return new ResultViewModel<User>(user);   
-    }
 
     public async Task<ResultViewModel<User>> AddMission(CreateMissionDTO missionDto)
     {
