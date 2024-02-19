@@ -1,5 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System.Security.Claims;
+using Tasks.Application;
 using Tasks.Application.DTOs.User;
 using Tasks.Application.Interfaces;
 
@@ -23,7 +25,12 @@ public class MissionsController : ControllerBase
         var result = await _userService.AddMission(model);
 
         if (!result.Success)
+        {
+            if (HttpContext.Response.StatusCode == StatusCodes.Status403Forbidden)
+                return StatusCode(StatusCodes.Status403Forbidden, result);
+
             return BadRequest(result);
+        }
 
         return Ok(result);
     }
@@ -32,9 +39,14 @@ public class MissionsController : ControllerBase
     public async Task<IActionResult> UpdateMissionPosition(EditMissionsPositionDTO model)
     {
         var result = await _userService.UpdateMissionsPosition(model);
-        
+
         if (!result.Success)
+        {
+            if (HttpContext.Response.StatusCode == StatusCodes.Status403Forbidden)
+                return StatusCode(StatusCodes.Status403Forbidden, result);
+
             return BadRequest(result);
+        }
 
         return Ok(result);
     }
@@ -43,9 +55,14 @@ public class MissionsController : ControllerBase
     public async Task<IActionResult> UpdateMission(EditMissionDTO model)
     {
         var result = await _userService.UpdateMission(model);
-        
+
         if (!result.Success)
+        {
+            if (HttpContext.Response.StatusCode == StatusCodes.Status403Forbidden)
+                return StatusCode(StatusCodes.Status403Forbidden, result);
+
             return BadRequest(result);
+        }
 
         return Ok(result);
     }
@@ -54,9 +71,14 @@ public class MissionsController : ControllerBase
     public async Task<IActionResult> DeleteMission(Guid id)
     {
         var result = await _userService.DeleteMission(id);
-        
+
         if (!result.Success)
-            return NotFound(result);
+        {
+            if (HttpContext.Response.StatusCode == StatusCodes.Status403Forbidden)
+                return StatusCode(StatusCodes.Status403Forbidden, result);
+
+            return BadRequest(result);
+        }
 
         return Ok(result);
     }

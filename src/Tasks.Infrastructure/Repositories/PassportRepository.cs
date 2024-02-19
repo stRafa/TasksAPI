@@ -42,7 +42,9 @@ public class PassportRepository : IPassportRepository
                     PasswordHash = reader["PasswordHash"].ToString(),
                     PasswordSalt = reader["PasswordSalt"].ToString(),
                     Status = (bool)reader["Status"],
-                    CreatedAt = (DateTime)reader["CreatedAt"]
+                    CreatedAt = (DateTime)reader["CreatedAt"],
+                    Roles = new List<Role>(),
+                    Claims = new List<Claim>()
                 };
 
                 if (reader["Type"] != DBNull.Value && reader["Value"] != DBNull.Value)

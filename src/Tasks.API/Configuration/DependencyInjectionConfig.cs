@@ -18,5 +18,7 @@ public static class DependencyInjectionConfig
         services.AddScoped<IMissionRepository>(p => new MissionRepository(connectionString));
         services.AddScoped<IAuthService, AuthService>();
         services.AddScoped<IPassportRepository>(p => new PassportRepository(connectionString));
+
+        services.AddHttpContextAccessor();
     }
 }

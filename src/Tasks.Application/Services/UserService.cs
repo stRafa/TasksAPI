@@ -1,4 +1,6 @@
-﻿using Microsoft.AspNetCore.Identity;
+﻿using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Identity;
+using System.Security.Claims;
 using Tasks.Application.DTOs.User;
 using Tasks.Application.DTOs.User.Validators;
 using Tasks.Application.Interfaces;
@@ -12,11 +14,13 @@ public class UserService : IUserService
 {
     private readonly IUserRepository _userRepository;
     private readonly IMissionRepository _missionRepository;
+    private readonly IHttpContextAccessor _httpContext;
 
-    public UserService(IUserRepository userRepository, IMissionRepository missionRepository)
+    public UserService(IUserRepository userRepository, IMissionRepository missionRepository, IHttpContextAccessor httpContext)
     {
         _userRepository = userRepository;
         _missionRepository = missionRepository;
+        _httpContext = httpContext;
     }
 
     public async Task<ResultViewModel<List<User>>> GetAll()
@@ -34,6 +38,12 @@ public class UserService : IUserService
 
     public async Task<ResultViewModel<User>> AddMission(CreateMissionDTO missionDto)
     {
+        if (!_httpContext.HttpContext.User.IsInRole("Admin") && missionDto.UserId != GetUserIdFromJwt())
+        {
+            _httpContext.HttpContext.Response.StatusCode = StatusCodes.Status403Forbidden;
+            return new ResultViewModel<User>("Acesso não autorizado");
+        }
+
         var validationResult = await new CreateMissionDTOValidator().ValidateAsync(missionDto);
         
         if (!validationResult.IsValid)
@@ -60,9 +70,15 @@ public class UserService : IUserService
             return new ResultViewModel<User>(validationResult);
         
         var mission = await _missionRepository.GetById(missionDto.MissionId);
-        
+
         if (mission is null)
             return new ResultViewModel<User>("Mission do not exist");
+
+        if (!_httpContext.HttpContext.User.IsInRole("Admin") && mission.UserId != GetUserIdFromJwt())
+        {
+            _httpContext.HttpContext.Response.StatusCode = StatusCodes.Status403Forbidden;
+            return new ResultViewModel<User>("Acesso não autorizado");
+        }
 
         var user = await _userRepository.GetById(mission.UserId);
 
@@ -81,6 +97,12 @@ public class UserService : IUserService
             return new ResultViewModel<Mission>(validationResult);
         
         var mission = await _missionRepository.GetById(missionDto.Id);
+
+        if (!_httpContext.HttpContext.User.IsInRole("Admin") && mission.UserId != GetUserIdFromJwt())
+        {
+            _httpContext.HttpContext.Response.StatusCode = StatusCodes.Status403Forbidden;
+            return new ResultViewModel<Mission>("Acesso não autorizado");
+        }
 
         mission.Title = missionDto.Title;
         mission.Description = missionDto.Description;
@@ -122,12 +144,18 @@ public class UserService : IUserService
     public async Task<ResultViewModel<User>> DeleteMission(Guid missionId)
     {
         var mission = await _missionRepository.GetById(missionId);
-        
+
+        if (!_httpContext.HttpContext.User.IsInRole("Admin") && mission.UserId != GetUserIdFromJwt())
+        {
+            _httpContext.HttpContext.Response.StatusCode = StatusCodes.Status403Forbidden;
+            return new ResultViewModel<User>("Acesso não autorizado");
+        }
+
         if (mission is null)
             return new ResultViewModel<User>("Mission not found");
 
         var user = await _userRepository.GetById(mission.UserId);
-        
+
         user.RemoveMission(missionId);
         
         _missionRepository.Delete(missionId);
@@ -135,5 +163,10 @@ public class UserService : IUserService
         _missionRepository.UpdateMany(user.Missions);
 
         return new ResultViewModel<User>(user);
+    }
+
+    private Guid GetUserIdFromJwt()
+    {
+        return Guid.Parse(_httpContext.HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier));
     }
 }

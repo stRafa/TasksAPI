@@ -76,7 +76,7 @@ public class AuthService : IAuthService
     private async Task<ClaimsIdentity> GetUserClaims(List<Claim> claims, Passport user)
     {
         if (claims is null)
-            return new ClaimsIdentity();
+            claims = [];
 
         claims.Add(new Claim(JwtRegisteredClaimNames.Sub, user.Id.ToString()));
         claims.Add(new Claim(JwtRegisteredClaimNames.Email, user.Username));
