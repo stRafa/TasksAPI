@@ -2,7 +2,7 @@
 
 namespace Tasks.Domain.Passport;
 
-public class Passport
+public class Passport : Entity
 {
     public Passport()
     {
@@ -20,7 +20,6 @@ public class Passport
         Roles = new List<Role>();
     }
 
-    public Guid Id { get; set; }
     public string Name { get; set;  }
     public string Username { get; set; }
     public string PasswordHash { get; set; }

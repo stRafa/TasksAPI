@@ -17,11 +17,11 @@ public class PassportRepository : IPassportRepository
     {
         using (var connection = new SqlConnection(_connectionString))
         {
-            const string query = @"SELECT U.Id, U.Name, U.Email AS Username, U.PasswordHash, U.PasswordSalt, U.Status, U.CreatedAt, C.Id AS C.Type, C.Value, R.Id AS RoleId, R.Name AS RoleName
+            const string query = @"SELECT U.Id, U.Name, U.Email AS Username, U.PasswordHash, U.PasswordSalt, U.Status, U.CreatedAt, C.Type, C.Value, R.Id AS RoleId, R.Name AS RoleName
                       FROM Users U 
-                      INNER JOIN Claims C ON U.Id = C.UserId 
-                      INNER JOIN UserRoles UR ON U.Id = UR.UserId
-                      INNER JOIN Roles R ON UR.RoleId = R.Id 
+                      LEFT JOIN Claims C ON U.Id = C.UserId 
+                      LEFT JOIN UserRoles UR ON U.Id = UR.UserId
+                      LEFT JOIN Roles R ON UR.RoleId = R.Id 
                       WHERE U.Email = @Email";
 
             var cmd = new SqlCommand(query, connection);
@@ -42,18 +42,22 @@ public class PassportRepository : IPassportRepository
                     PasswordHash = reader["PasswordHash"].ToString(),
                     PasswordSalt = reader["PasswordSalt"].ToString(),
                     Status = (bool)reader["Status"],
-                    CreatedAt = (DateTime)reader["CreatedAt"],
-                    Claims = [],
-                    Roles = []
+                    CreatedAt = (DateTime)reader["CreatedAt"]
                 };
 
-                passport.Claims.Add(new Claim(reader["Type"].ToString(), reader["Value"].ToString()));
-
-                passport.Roles.Add(new Role
+                if (reader["Type"] != DBNull.Value && reader["Value"] != DBNull.Value)
                 {
-                    Id = (Guid)reader["RoleId"],
-                    Name = reader["RoleName"].ToString()
-                });
+                    passport.Claims.Add(new Claim(reader["Type"].ToString(), reader["Value"].ToString()));
+                }
+
+                if (reader["RoleId"] != DBNull.Value && reader["RoleName"] != DBNull.Value)
+                {
+                    passport.Roles.Add(new Role
+                    {
+                        Id = (Guid)reader["RoleId"],
+                        Name = reader["RoleName"].ToString()
+                    });
+                }
             }
 
             return passport;

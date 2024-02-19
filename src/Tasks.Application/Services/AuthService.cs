@@ -57,7 +57,7 @@ public class AuthService : IAuthService
 
         var passwordHash = PasswordHasher.ComputeHash(loginDto.Password, passport.PasswordSalt, _pepper, _iteration);
 
-        if (passwordHash != passport.PasswordHash)
+        if (passwordHash.Trim() != passport.PasswordHash.Trim())
             return new ResultViewModel<LoginViewModel>("Username or password incorrect");
 
         var response = new LoginViewModel(await GenerateJwt(passport));
@@ -75,6 +75,9 @@ public class AuthService : IAuthService
 
     private async Task<ClaimsIdentity> GetUserClaims(List<Claim> claims, Passport user)
     {
+        if (claims is null)
+            return new ClaimsIdentity();
+
         claims.Add(new Claim(JwtRegisteredClaimNames.Sub, user.Id.ToString()));
         claims.Add(new Claim(JwtRegisteredClaimNames.Email, user.Username));
         claims.Add(new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()));
