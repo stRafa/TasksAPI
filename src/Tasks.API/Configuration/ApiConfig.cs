@@ -29,6 +29,8 @@ public static class ApiConfig
 
         app.UseAuthConfiguration();
 
+        app.UseExceptionHandlerMiddleware();
+
         app.MapControllers();
 
         return app;

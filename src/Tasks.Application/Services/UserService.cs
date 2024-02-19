@@ -29,7 +29,7 @@ public class UserService : IUserService
         if (!_httpContext.HttpContext.User.IsInRole("Admin"))
         {
             _httpContext.HttpContext.Response.StatusCode = StatusCodes.Status403Forbidden;
-            return new ResultViewModel<List<User>>("Acesso não autorizado");
+            return new ResultViewModel<List<User>>("Unauthorized");
         }
 
         return new ResultViewModel<List<User>>(await _userRepository.GetAll()); 
@@ -40,7 +40,7 @@ public class UserService : IUserService
         if (!_httpContext.HttpContext.User.IsInRole("Admin") && id != GetUserIdFromJwt())
         {
             _httpContext.HttpContext.Response.StatusCode = StatusCodes.Status403Forbidden;
-            return new ResultViewModel<User>("Acesso não autorizado");
+            return new ResultViewModel<User>("Unauthorized");
         }
 
         var user = await _userRepository.GetById(id);
@@ -56,7 +56,7 @@ public class UserService : IUserService
         if (!_httpContext.HttpContext.User.IsInRole("Admin") && missionDto.UserId != GetUserIdFromJwt())
         {
             _httpContext.HttpContext.Response.StatusCode = StatusCodes.Status403Forbidden;
-            return new ResultViewModel<User>("Acesso não autorizado");
+            return new ResultViewModel<User>("Unauthorized");
         }
 
         var validationResult = await new CreateMissionDTOValidator().ValidateAsync(missionDto);
@@ -92,7 +92,7 @@ public class UserService : IUserService
         if (!_httpContext.HttpContext.User.IsInRole("Admin") && mission.UserId != GetUserIdFromJwt())
         {
             _httpContext.HttpContext.Response.StatusCode = StatusCodes.Status403Forbidden;
-            return new ResultViewModel<User>("Acesso não autorizado");
+            return new ResultViewModel<User>("Unauthorized");
         }
 
         var user = await _userRepository.GetById(mission.UserId);
@@ -116,7 +116,7 @@ public class UserService : IUserService
         if (!_httpContext.HttpContext.User.IsInRole("Admin") && mission.UserId != GetUserIdFromJwt())
         {
             _httpContext.HttpContext.Response.StatusCode = StatusCodes.Status403Forbidden;
-            return new ResultViewModel<Mission>("Acesso não autorizado");
+            return new ResultViewModel<Mission>("Unauthorized");
         }
 
         mission.Title = missionDto.Title;
@@ -138,7 +138,7 @@ public class UserService : IUserService
         if (!_httpContext.HttpContext.User.IsInRole("Admin") && userDto.Id != GetUserIdFromJwt())
         {
             _httpContext.HttpContext.Response.StatusCode = StatusCodes.Status403Forbidden;
-            return new ResultViewModel<User>("Acesso não autorizado");
+            return new ResultViewModel<User>("Unauthorized");
         }
 
         var user = new User(userDto.Name, userDto.Email);
@@ -157,7 +157,7 @@ public class UserService : IUserService
         if (!_httpContext.HttpContext.User.IsInRole("Admin") && id != GetUserIdFromJwt())
         {
             _httpContext.HttpContext.Response.StatusCode = StatusCodes.Status403Forbidden;
-            return new ResultViewModel<User>("Acesso não autorizado");
+            return new ResultViewModel<User>("Unauthorized");
         }
 
         if (user is null)
@@ -175,7 +175,7 @@ public class UserService : IUserService
         if (!_httpContext.HttpContext.User.IsInRole("Admin") && mission.UserId != GetUserIdFromJwt())
         {
             _httpContext.HttpContext.Response.StatusCode = StatusCodes.Status403Forbidden;
-            return new ResultViewModel<User>("Acesso não autorizado");
+            return new ResultViewModel<User>("Unauthorized");
         }
 
         if (mission is null)
