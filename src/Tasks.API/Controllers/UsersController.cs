@@ -20,6 +20,12 @@ public class UsersController : ControllerBase
     [HttpGet]
     public async Task<IActionResult> GetAllUser()
     {
+        var result = await _userService.GetAll();
+
+        if (!result.Success)
+            return StatusCode(StatusCodes.Status403Forbidden, result);
+        
+
         return Ok(await _userService.GetAll());
     }
 
@@ -29,7 +35,12 @@ public class UsersController : ControllerBase
         var result = await _userService.GetById(id);
 
         if (!result.Success)
+        {
+            if (HttpContext.Response.StatusCode == StatusCodes.Status403Forbidden)
+                return StatusCode(StatusCodes.Status403Forbidden, result);
+
             return NotFound(result);
+        }
 
         return Ok(result);
     }
@@ -40,7 +51,12 @@ public class UsersController : ControllerBase
         var result = await _userService.UpdateUserInfo(model);
 
         if (!result.Success)
+        {
+            if (HttpContext.Response.StatusCode == StatusCodes.Status403Forbidden)
+                return StatusCode(StatusCodes.Status403Forbidden, result);
+
             return BadRequest(result);
+        }
 
         return Ok(result);
     }
@@ -51,7 +67,12 @@ public class UsersController : ControllerBase
         var result = await _userService.Delete(id);
 
         if (!result.Success)
+        {
+            if (HttpContext.Response.StatusCode == StatusCodes.Status403Forbidden)
+                return StatusCode(StatusCodes.Status403Forbidden, result);
+
             return NotFound(result);
+        }
 
         return Ok(result);
     }
