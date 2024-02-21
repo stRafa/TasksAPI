@@ -137,7 +137,7 @@ public class UserRepository : IUserRepository
                     Description = reader["Description"] != DBNull.Value ? reader["Description"].ToString() : "",
                     Position = (short)reader["Position"],
                     Status = (EMissionStatus)(int)reader["Status"],
-                    UserId = userId
+                    UserId = userId 
                 });
             }
         }
